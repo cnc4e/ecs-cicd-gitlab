@@ -1,0 +1,26 @@
+# 使用する時はファイル名の先頭に.(ドット)をつけ「.gitlab-ci.yml」とし、レポジトリのルートに配置してください。
+stages:
+  - build
+
+docker-build:
+  image: 
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  stage: build
+  variables:
+    ECR_HOST: AWS-ID.dkr.ecr.REGION.amazonaws.com
+    APP_NAME: PJ-NAME-APP-NAME
+  script:
+    - |
+          cat > /kaniko/.docker/config.json <<EOF
+          {
+            "credHelpers": {
+              "${ECR_HOST}": "ecr-login"
+            }
+          }
+          EOF
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination ${ECR_HOST}/$APP_NAME:latest
+  only:
+    - master
+  tags:
+    - PJ-NAME

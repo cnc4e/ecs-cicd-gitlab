@@ -1,0 +1,34 @@
+# 使用する時はファイル名の先頭に.(ドット)をつけ「.gitlab-ci.yml」とし、レポジトリのルートに配置してください。
+stages:
+  - build
+  - deploy
+
+zip-build:
+  image: 
+    # name: kramos/alpine-zip
+    name: ryotamori/alpine-zip:latest
+    entrypoint: [""]
+  stage: build
+  script:
+    - zip settings ./*
+  artifacts:
+    paths:
+      - settings.zip
+  only:
+    - master
+  tags:
+    - PJ-NAME
+
+s3-deploy:
+  image: 
+    name: amazon/aws-cli
+    entrypoint: [""]
+  stage: deploy
+  variables:
+    BACKET: PJ-NAME-APP-NAME
+  script:
+    - aws s3 cp ./settings.zip s3://${BACKET}
+  only:
+    - master
+  tags:
+    - PJ-NAME
