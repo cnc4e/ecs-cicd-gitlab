@@ -94,5 +94,9 @@ resource "aws_instance" "gitlab_runner" {
   }
 
   key_name = var.ec2_key_name
+
+  lifecycle {
+    ignore_changes = [ami]
+  }
 }
 
