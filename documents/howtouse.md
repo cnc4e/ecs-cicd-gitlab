@@ -3,6 +3,9 @@
     - [tfバックエンド](#tfバックエンド)
     - [ネットワーク](#ネットワーク)
     - [GitLabサーバ](#gitlabサーバ)
+      - [rootパスワードが設定できない場合のワークアラウンド](#rootパスワードが設定できない場合のワークアラウンド)
+        - [rootのパスワードを変更する方法](#rootのパスワードを変更する方法)
+        - [初回アクセス時にrootのパスワードを設定できるAMIを指定する方法](#初回アクセス時にrootのパスワードを設定できるamiを指定する方法)
     - [GitLab Runner](#gitlab-runner)
     - [ECSクラスタ](#ecsクラスタ)
   - [サービス構築](#サービス構築)
@@ -145,7 +148,7 @@ GitLabサーバモジュールのディレクトリへ移動します。
 cd $CLONEDIR/ecs-cicd-gitlab/terraform/$PJNAME/environment/self-host-gitlab
 ```
 
-`self-host-gitlab.tf`を編集します。とくにSGのインバウンドCIDRは自身の環境にあわせて変更する必要があります。以下コマンドのようにYOURACCESSCIDRを設定して置換します。また、自動スケジュールや自動スナップショットを有効にする場合、対応する機能を`true`に設定してください。
+`self-host-gitlab.tf`を編集します。とくにSGのインバウンドCIDRは自身の環境にあわせて変更する必要があります。以下コマンドのようにYOURACCESSCIDRを設定して置換します。また、インスタンスにsshしたい場合はkeyペア名を指定し、自動スケジュールや自動スナップショットを有効にする場合、対応する機能を`true`に設定してください。
 
 **Linuxの場合**
 
@@ -175,7 +178,7 @@ terraform実行後、以下の通りGitLabサーバにアクセスしてGitLab�
 
 - GitLabサーバを構築したら許可した端末からGUIに接続します。ブラウザにEC2インスタンスのパブリックIPまたはパブリックDNSを入力してください。terraform完了後、つながらくしても繋がらない場合、インスタンスを再起動してみるとよいかもしれません。
 
-- 初回アクセスの場合、rootのパスワード変更を求められるため、パスワードを設定してください
+- 初回アクセスの場合、rootのパスワード変更を求められるため、パスワードを設定してください。（作成時の最新AMIによってはここでrootのパスワード変更が求められるず、ログイン画面が表示されてしまう場合があります。その場合は後述する[ワークアラウンド](#rootパスワードが設定できない場合のワークアラウンド)を実施ください。）
 
 - rootのパスワードを入力するとログイン画面が表示されます。先ほど設定したパスワードでrootにログインします
 
@@ -199,6 +202,93 @@ terraform実行後、以下の通りGitLabサーバにアクセスしてGitLab�
 **作成後のイメージ**
 
 ![](./images/use-gitlab.svg)
+
+#### rootパスワードが設定できない場合のワークアラウンド
+
+作成時点の最新AMIによってはrootのパスワードが設定済のイメージである場合があります。
+たとえば、2020年11月25日に作成されたGitLab CE 13.6.1のAMIなどです。
+このAMIで作成されるrootユーザのデフォルトパスワードが不明なため[rootのパスワードを変更する方法](#rootのパスワードを変更する方法)か、[初回アクセス時にrootのパスワードを設定できるAMIを指定する方法](#初回アクセス時にrootのパスワードを設定できるAMIを指定する方法)のいずれかを実施ください。
+
+##### rootのパスワードを変更する方法
+
+GitLabサーバにsshでログインします。GitLabサーバ作成時にlocalsで`ec2_key_name`を指定していなかった場合、一度terraform destroyし、パラメータを設定して際applyしてください。インスタンスへは`ubuntu`ユーザでログインできます。
+
+```sh
+ssh -i ~/.ssh/<YOURKEY> ubuntu@<GitLabサーバIP or DNS>
+```
+
+インスタンスのrootにスイッチします。
+
+``` sh
+sudo su -
+```
+
+GitLabの設定コンソールを起動します。
+
+``` sh
+gitlab-rails console -e production
+```
+
+表示例
+
+```
+--------------------------------------------------------------------------------
+ Ruby:         ruby 2.7.2p137 (2020-10-01 revision 5445e04352) [x86_64-linux]
+ GitLab:       13.6.1 (1b6a590b197) FOSS
+ GitLab Shell: 13.13.0
+ PostgreSQL:   11.9
+--------------------------------------------------------------------------------
+user = User.find_by(usernLoading production environment (Rails 6.0.3.3)
+irb(main):001:0>
+```
+
+GitLabのrootユーザを指定します。
+
+``` sh
+irb(main):001:0> user = User.where(id: 1).first
+```
+
+使用したいパスワードを設定します。
+
+``` sh
+irb(main):001:0> user.password = 'P@ssw0rd'
+```
+
+パスワードの確認も設定します。
+
+``` sh
+irb(main):001:0> user.password_confirmation = 'P@ssw0rd'
+```
+
+設定を保存します。
+
+``` sh
+user.save!
+```
+
+上記行えばGitLabのrootパスワードが変更できます。WEB UIに接続し、rootユーザでログインできることを確認ください。
+
+##### 初回アクセス時にrootのパスワードを設定できるAMIを指定する方法
+
+GitLab CE 13.5.*では初回アクセス時にrootのパスワード変更ができることを確認しています。
+`$CLONEDIR/ecs-cicd-gitlab/terraform/modules/environment/self-host-gitlab/`ディレクトリにある`ec2.tf`を以下の様に`GitLab CE 13.5*`のイメージを使用する様に修正ください。
+
+```
+data "aws_ami" "recent_gitlab" {
+  most_recent = true
+  owners      = ["679593333241"]
+
+  filter {
+    name   = "name"
+    values = ["GitLab CE 13.5*"] # before ["GitLab CE 13*"]
+  }
+
+}
+
+~以下略~
+```
+
+上記修正したらterraform destroyし再度applyしてインスタンスを再作成してください。
 
 ### GitLab Runner
 
