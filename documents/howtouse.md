@@ -142,6 +142,8 @@ export PRIVATESUBNET2=<private_subent_ids 2>
 
 インターネットのSaaS版GitLabを使用する場合、GitLabサーバのモジュールは実行しなくても良いです。SaaS版でもグループの作成やRunnerトークンの確認は実施してください。
 
+なお、GitLabサーバモジュールで使用するAMIはGitLabがAWS Marketplaceで公開している[この](https://aws.amazon.com/marketplace/pp/B071RFCJZK?ref=cns_1clkPro)AMIです。このAMIを使用するにはインスタンス作成前にサブスクライブする必要があるため、事前にサブスクライブしてください。
+
 GitLabサーバモジュールのディレクトリへ移動します。
 
 ``` sh
