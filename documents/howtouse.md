@@ -45,7 +45,7 @@
 
 ``` sh
 export CLONEDIR=`pwd`
-git clone https://github.com/moriryota62/ecs-cicd-gitlab.git
+git clone https://github.com/cnc4e/ecs-cicd-gitlab.git
 ```
 
 ## 環境構築
