@@ -25,7 +25,7 @@ resource "aws_ecs_task_definition" "this" {
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/${var.pj}-cluster/${var.app}",
+          "awslogs-group": "${var.clowdwatch_log_groups.0}",
           "awslogs-region": "${data.aws_region.current.name}",
           "awslogs-stream-prefix": "dummy"
         }
