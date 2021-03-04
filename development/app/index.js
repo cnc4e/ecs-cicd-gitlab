@@ -8,7 +8,7 @@ const server = http.createServer((req, res) => {
     <!DOCTYPE html>
         <html lang="ja">
             <body>
-                <h1>これはCICDで再度デプロイされたアプリケーション</h1>
+                <h1>これはソースリポジトリが更新されると自動的にデプロイされたアプリケーション</h1>
                 <h1> ${env.appname} です。</h1>
             </body>
     </html>`);
