@@ -150,7 +150,7 @@ GitLabサーバモジュールのディレクトリへ移動します。
 cd $CLONEDIR/ecs-cicd-gitlab/terraform/$PJNAME/environment/self-host-gitlab
 ```
 
-`self-host-gitlab.tf`を編集します。とくにSGのインバウンドCIDRは自身の環境にあわせて変更する必要があります。以下コマンドのようにYOURACCESSCIDRを設定して置換します。また、インスタンスにsshしたい場合はkeyペア名を指定し、自動スケジュールや自動スナップショットを有効にする場合、対応する機能を`true`に設定してください。
+`self-host-gitlab.tf`を編集します。とくにSGのインバウンドCIDRは自身の環境にあわせて変更する必要があります。以下コマンドのようにYOURACCESSCIDRを設定して置換します。また、インスタンスにsshしたい場合はkeyペア名を指定（keyペアの事前作成要）し、自動スケジュールや自動スナップショットを有効にする場合、対応する機能を`true`に設定してください。
 
 **Linuxの場合**
 
