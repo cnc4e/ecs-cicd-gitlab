@@ -328,7 +328,7 @@ terraform apply
 
 上記実行が完了したらGitLab側にRunnerが認識されているか確認します。
 
-- グループに所存したユーザでGitLabにログインしてください
+- グループに所属したユーザでGitLabにログインしてください
 
 - グループの画面で左メニューから[Settings]-[CICD]-[Runners]を開きます。`Available Runners`に作成したRunnerが表示されていれば登録完了です。表示されるまでには少し時間がかかります
 
@@ -449,7 +449,7 @@ find ./ -type f -exec grep -l 'PRIVATE-SUBNET-1' {} \; | xargs sed -i "" -e 's:P
 find ./ -type f -exec grep -l 'PRIVATE-SUBNET-2' {} \; | xargs sed -i "" -e 's:PRIVATE-SUBNET-2:'$PRIVATESUBNET2':g'
 ```
 
-- グループに所存したユーザでGitLabにログインしてください
+- グループに所属したユーザでGitLabにログインしてください
 
 - 上部メニューバーの[Groups]-[Your groups]を表示し、先ほど作成したグループを選択します
 
