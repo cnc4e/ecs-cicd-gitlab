@@ -27,7 +27,7 @@
 
 - [kaniko](https://docs.gitlab.com/ee/ci/docker/using_kaniko.html)を使用し、レポジトリのルートにあるdockerfileをbuildする
 - buildしたimageは以下のタグを付与しECRにプッシュする
-  - <ECRホスト名>/<PJ-NAME-APP-NAME>:latest
+  - `<ECRホスト名>/<PJ-NAME-APP-NAME>:latest`
 - このパイプラインは`master`ブランチに対する変更時に実行する
 - パイプラインは`<PJ-NAME>`のタグがついたrunnerで実行する
 
