@@ -48,6 +48,14 @@ export CLONEDIR=`pwd`
 git clone https://github.com/cnc4e/ecs-cicd-gitlab.git
 ```
 
+Terraformを実行する前に、AWSの認証情報を設定します。IAMユーザは事前に作成してください。
+
+```sh
+aws configure
+```
+
+`AWS Access Key ID`にIAMユーザのAWSアクセスキーを入力してください。また`AWS Secret Access Key`にIAMユーザのAWSシークレットアクセスキーを入力してください。リージョン及びアウトプットフォーマットは任意のもので構いません。    
+
 ## 環境構築
 
 環境構築はプロジェクトで一度だけ行います。環境の分け方によっては複数実施するかもしれません。`main-template`ディレクトリをコピーして`環境名`ディレクトリなどの作成がオススメです。以下の手順では`cicd-dev`という環境名を想定して記載します。
