@@ -5,7 +5,7 @@ resource "aws_subnet" "public" {
 
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.subnet_public_cidrs[count.index]
-  availability_zone = data.aws_availability_zones.available.names[ count.index + 1]
+  availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = merge(
     {
@@ -20,7 +20,7 @@ resource "aws_subnet" "private" {
 
   vpc_id     = aws_vpc.main.id
   cidr_block = var.subnet_private_cidrs[count.index]
-  availability_zone = data.aws_availability_zones.available.names[ count.index + 1]
+  availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = merge(
     {
